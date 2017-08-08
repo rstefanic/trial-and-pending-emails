@@ -1,6 +1,8 @@
 from exchangelib import Account, Configuration, DELEGATE, Mailbox, Message, ServiceAccount
-from getpass import getpass
+from configure import get_configuration
+
 import datetime
+import json
 import os
 import sys
 
@@ -11,7 +13,7 @@ PENDING_TRIAL_REPORT = os.path.join(os.path.abspath('.'), PENDING_TRIAL)
 
 class CEEmailAccount(object):
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, smtp_address):
         self.username = username
         self.password = password
         self.credentials = ServiceAccount(
@@ -21,7 +23,7 @@ class CEEmailAccount(object):
             server='webmail.sherweb2010.com',
             credentials=self.credentials)
         self.account = Account(
-            primary_smtp_address=self.username,
+            primary_smtp_address=smtp_address,
             config=self.config,
             autodiscover=False,
             access_type=DELEGATE)
@@ -45,13 +47,14 @@ print("Done.")
 """
 
 def main():
-    username = input("Username: ")
-    password = getpass("Password: ")
+    (username, password, smtp_address) = get_configuration()
+"""
     print("Connecting...")
-    email_account = CEEmailAccount(username, password)
+    email_account = CEEmailAccount(username, password, smtp_address)
     print("\nLook for clubs with an expiration date of {:%m-%d-%Y} or earlier.\n"
           .format(datetime.datetime.now() + datetime.timedelta(days=14)))
-    print(email_account.show_inbox_count())
+    print(email_account.show_inbox_count())"""
+
 
 if __name__ == '__main__':
     main()
