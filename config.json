@@ -1,5 +1,6 @@
 {
     "username": "",
     "password": "",
-    "smtp_address" : "" 
+    "smtp_address" : "",
+    "server": ""
 }

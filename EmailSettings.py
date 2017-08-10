@@ -4,10 +4,11 @@ from json import load
 class EmailSettings(object):
 
     def __init__(self):
-        
+
         with open("config.json") as config:
             config_file = load(config)
 
+        # Get username safely
         try:
             self.username = config_file['username']
 
@@ -17,6 +18,7 @@ class EmailSettings(object):
         except (KeyError, ValueError):
             self.username = input("Username: ")
 
+        # Get password safely
         try:
             self.password = config_file['password']
 
@@ -26,6 +28,7 @@ class EmailSettings(object):
         except (KeyError, ValueError):
             self.password = getpass("Password: ")
 
+        # Get SMTP address safely
         try:
             self.smtp_address = config_file['smtp_address']
 
@@ -35,6 +38,7 @@ class EmailSettings(object):
         except (KeyError, ValueError):
             self.smtp_address = self.username
 
+        # Get server safely
         try:
             self.server = config_file['server']
 
