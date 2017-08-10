@@ -16,6 +16,7 @@ PENDING_TRIAL = "pending-trial-accounts({:%m-%d-%Y}).txt".format(datetime.dateti
 PENDING_TRIAL_REPORT = os.path.join(os.path.abspath('.'), PENDING_TRIAL)
 
 class CEEmailAccount(object):
+    """ Establish connection to email account """
 
     def __init__(self, username, password, smtp_address, server):
         self.username = username
@@ -24,7 +25,7 @@ class CEEmailAccount(object):
             username=self.username,
             password=self.password)
         self.config = Configuration(
-            server=server, #'webmail.sherweb2010.com',
+            server=server,
             credentials=self.credentials)
         self.account = Account(
             primary_smtp_address=smtp_address,
@@ -37,21 +38,24 @@ class CEEmailAccount(object):
         return self.account.inbox.total_count
 
     def send_email(self, trial, admin_name, to_address):
-
+        """ Send a trial or pending email based on the club """
+        
         # Construct body of message
         body = "Dear {}".format(admin_name)
         if trial:
+            subject = "Trial Account Notice"
             with open(TRIAL_EMAIL) as file:
                 body = ''.join(file.readlines())
         else:
+            subject = "Pending Account Notice"
             with open(PENDING_EMAIL) as file:
                 body = ''.join(file.readlines())
 
         # Build and send message
         msg = Message(
-            account=this.account,
-            folder=account.sent,
-            subject='Test Email',
+            account=self.account,
+            folder=self.account.sent,
+            subject=subject,
             body= HTMLBody(body),
             to_recipients=[Mailbox(email_address=to_address)]
         )
@@ -60,6 +64,7 @@ class CEEmailAccount(object):
         print("Message to {} sent.".format(admin_name))
 
 class Club(object):
+    """ Store Club information """
 
     def __init__(self):
         self.club_name = input("Club name: ").strip()
@@ -67,13 +72,22 @@ class Club(object):
         self.email = input("Email: ").strip()
         self.admin_name = input("Admin name: ").strip()
         trial = input("Trial Account [Y/n]: ").lower()
-
         if trial == 'n':
             self.trial = False
         else:
             self.trial = True
 
-            
+def email_club_admins(email):
+    """ Loop through until all the admins have been emailed """
+    
+    print("\nLook for clubs with an expiration date of {:%m-%d-%Y} or earlier.\n"
+          .format(datetime.datetime.now() + datetime.timedelta(days=14)))
+
+    while True:
+        print("\n")
+        club = Club()
+        email.send_email(club.trial, club.admin_name, club_email)
+
 def main():
     email_settings = EmailSettings()
     print("Connecting...")
@@ -81,10 +95,7 @@ def main():
                                    email_settings.password,
                                    email_settings.smtp_address,
                                    email_settings.server)
-                   
-#   print("\nLook for clubs with an expiration date of {:%m-%d-%Y} or earlier.\n"
-#          .format(datetime.datetime.now() + datetime.timedelta(days=14)))
-    print(email_account.show_inbox_count())
+    print("Connected to {}".format(email_settings.server))
 
 
 if __name__ == '__main__':
