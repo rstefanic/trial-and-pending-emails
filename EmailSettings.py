@@ -8,6 +8,7 @@ from getpass import getpass
 from json import load
 
 class EmailSettings(object):
+    """ Create an object with all connection settings """
 
     def __init__(self):
 
