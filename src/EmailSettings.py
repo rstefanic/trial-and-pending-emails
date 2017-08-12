@@ -1,9 +1,3 @@
-"""
-A small struct that safely reads/gets the
-emailing settings.
-
-"""
-
 from getpass import getpass
 from json import load
 
