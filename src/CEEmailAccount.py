@@ -23,19 +23,19 @@ class CEEmailAccount(object):
     def show_inbox_count(self):
         return self.account.inbox.total_count
 
-    def send_email(self, trial, admin_name, to_address):
+    def send_email(self, trial, admin_name, to_address, trial_dest, pending_dest):
         """ Send a trial or pending email based on the club """
         
         # Construct body of message
         body = "Dear {}".format(admin_name)
         if trial:
             subject = "Trial Account Notice"
-            with open(TRIAL_EMAIL) as file:
-                body = ''.join(file.readlines())
+            with open(trial_dest) as file:
+                body += ''.join(file.readlines())
         else:
             subject = "Pending Account Notice"
-            with open(PENDING_EMAIL) as file:
-                body = ''.join(file.readlines())
+            with open(pending_dest) as file:
+                body += ''.join(file.readlines())
 
         # Build and send message
         msg = Message(

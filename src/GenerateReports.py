@@ -10,7 +10,7 @@ def print_short_info(club):
 
 def print_long_info(club):
     return "- " + club.club_name + " (" + club.club_id + \
-        ")\n\s\sAdmin: " + club.admin_name + " (" + club.email + ")"
+        ")\n  Admin: " + club.admin_name + " (" + club.email + ")"
 
 def loop_list(club_list, print_type, delimiter='\n'):
     return_string = ""
