@@ -1,6 +1,13 @@
 {
+    // Enter in your username and password here
     "username": "",
     "password": "",
+
+    // Additional Server Information if neccesary
     "smtp_address" : "",
-    "server": ""
+    "server": "",
+
+    // Email addresses used for summary email
+    "primary_to_address:": "",
+    "cc_recipents": []
 }
