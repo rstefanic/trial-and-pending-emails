@@ -10,9 +10,12 @@ import sys
 PENDING_CLUBS = []
 TRIAL_CLUBS = []
 
+CURRENT_DATE = "{%m-%d-%Y}".format(datetime.datetime.now())
+FOURTEEN_DAYS_FROM_NOW = "{%m-%d-%Y}".format(datetime.datetime.now() +
+                                             datetime.timedelta(days=14))
 TRIAL_EMAIL = os.path.join(os.path.abspath('./src'), 'trial.html')
 PENDING_EMAIL = os.path.join(os.path.abspath('./src'), 'pending.html')
-PENDING_TRIAL = "pending-trial-accounts({:%m-%d-%Y}).txt".format(datetime.datetime.now())
+PENDING_TRIAL = "pending-trial-accounts({:%m-%d-%Y}).txt".format(CURRENT_DATE)
 PENDING_TRIAL_REPORT = os.path.join(os.path.abspath('.'), PENDING_TRIAL)
 
 def main():
@@ -50,7 +53,7 @@ def email_club_admins(email):
     """ Main Loop: loop through until all the admins have been emailed """
     
     print("\nLook for clubs with an expiration date of {:%m-%d-%Y} or earlier.\n"
-          .format(datetime.datetime.now() + datetime.timedelta(days=14)))
+          .format(FOURTEEN_DAYS_FROM_NOW)
 
     while True:
         print("\n")
