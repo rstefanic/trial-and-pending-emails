@@ -1,6 +1,6 @@
-from src.EmailSettings import EmailSettings
-from src.CEEmailAccount import CEEmailAccount
-from src.GenerateReports import write_report
+from src.emailsettings import EmailSettings
+from src.ceemailaccount import CEEmailAccount
+from src.generatereports import write_report
 
 import datetime
 import json
@@ -10,16 +10,18 @@ import sys
 PENDING_CLUBS = []
 TRIAL_CLUBS = []
 
-CURRENT_DATE = "{%m-%d-%Y}".format(datetime.datetime.now())
-FOURTEEN_DAYS_FROM_NOW = "{%m-%d-%Y}".format(datetime.datetime.now() +
+CURRENT_DATE = "{:%m-%d-%Y}".format(datetime.datetime.now())
+FOURTEEN_DAYS_FROM_NOW = "{:%m-%d-%Y}".format(datetime.datetime.now() +
                                              datetime.timedelta(days=14))
 TRIAL_EMAIL = os.path.join(os.path.abspath('./src'), 'trial.html')
 PENDING_EMAIL = os.path.join(os.path.abspath('./src'), 'pending.html')
-PENDING_TRIAL = "pending-trial-accounts({:%m-%d-%Y}).txt".format(CURRENT_DATE)
+PENDING_TRIAL = "pending-trial-accounts({}).txt".format(CURRENT_DATE)
 PENDING_TRIAL_REPORT = os.path.join(os.path.abspath('.'), PENDING_TRIAL)
 
 def main():
     email_settings = EmailSettings()
+    print(email_settings.to_address)
+    print(email_settings.cc_recipients)
     print("Connecting...")
     email_account = CEEmailAccount(email_settings.username,
                                    email_settings.password,
@@ -27,9 +29,8 @@ def main():
                                    email_settings.server)
     print("Connected to {}".format(email_settings.server))
 
-    email_club_admins(email_account)
+    email_club_admins(email_account, email_settings)
     write_report(PENDING_TRIAL_REPORT, PENDING_CLUBS, TRIAL_CLUBS, verbose=True)
-    
 
 def add_to_list(club, ls):
     return ls.append(club)
@@ -49,11 +50,11 @@ class Club(object):
             self.trial = True
 
             
-def email_club_admins(email):
+def email_club_admins(email, settings):
     """ Main Loop: loop through until all the admins have been emailed """
     
-    print("\nLook for clubs with an expiration date of {:%m-%d-%Y} or earlier.\n"
-          .format(FOURTEEN_DAYS_FROM_NOW)
+    print("\nLook for clubs with an expiration date of {} or earlier.\n"
+          .format(FOURTEEN_DAYS_FROM_NOW))
 
     while True:
         print("\n")
@@ -62,7 +63,8 @@ def email_club_admins(email):
                          club.admin_name,
                          club.email,
                          TRIAL_EMAIL,
-                         PENDING_EMAIL)
+                         PENDING_EMAIL,
+                         settings.cc_recipients)
         if club.trial == False:
             add_to_list(club, PENDING_CLUBS)
         else:

@@ -23,9 +23,10 @@ class CEEmailAccount(object):
     def show_inbox_count(self):
         return self.account.inbox.total_count
 
-    def send_email(self, trial, admin_name, to_address, trial_dest, pending_dest):
+    def send_email(self, trial, admin_name, to_address,
+                   trial_dest, pending_dest, cc_recipients):
         """ Send a trial or pending email based on the club """
-        
+
         # Construct body of message
         body = "Dear {}".format(admin_name)
         if trial:
@@ -37,14 +38,18 @@ class CEEmailAccount(object):
             with open(pending_dest) as file:
                 body += ''.join(file.readlines())
 
+
         # Build and send message
+
         msg = Message(
             account=self.account,
             folder=self.account.sent,
             subject=subject,
             body= HTMLBody(body),
-            to_recipients=[Mailbox(email_address=to_address)]
+            to_recipients=[Mailbox(email_address=to_address)],
+            cc_recipients=[(Mailbox(email_address=x)) for x in cc_recipients]
         )
 
         msg.send_and_save()
         print("Message to {} sent.".format(admin_name))
+

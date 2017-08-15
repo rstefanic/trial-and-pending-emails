@@ -1,6 +1,8 @@
 from getpass import getpass
 from json import load
 
+import sys
+
 class EmailSettings(object):
     """ Create an object with all connection settings """
 
@@ -48,3 +50,19 @@ class EmailSettings(object):
             
         except (KeyError, ValueError):
             self.server = 'webmail.sherweb2010.com'
+
+
+        # Get Primary to email address safely
+        try:
+            self.to_address = config_file['primary_to_address']
+
+        except (KeyError, ValueError):
+            self.to_address = None
+            
+
+        # Get CC recpients safely
+        try:
+            self.cc_recipients = config_file['cc_recipients']
+
+        except (KeyError, ValueError):
+            self.cc_recipients = []
