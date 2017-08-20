@@ -7,42 +7,27 @@ import json
 import os
 import sys
 
+""" Constants and classes """
+
+# Lists used to store clubs
 PENDING_CLUBS = []
 TRIAL_CLUBS = []
 
+# Dates used
 CURRENT_DATE = "{:%m-%d-%Y}".format(datetime.datetime.now())
 FOURTEEN_DAYS_FROM_NOW = "{:%m-%d-%Y}".format(datetime.datetime.now() +
                                              datetime.timedelta(days=14))
+
+# Paths for files used and created
 TRIAL_EMAIL = os.path.join(os.path.abspath('./src'), 'trial.html')
 PENDING_EMAIL = os.path.join(os.path.abspath('./src'), 'pending.html')
 PENDING_TRIAL = "pending-trial-accounts({}).txt".format(CURRENT_DATE)
 PENDING_TRIAL_REPORT = os.path.join(os.path.abspath('.'), PENDING_TRIAL)
 
-def main():
-    email_settings = EmailSettings()
-    print(email_settings.to_address)
-    print(email_settings.cc_recipients)
-    print("Connecting...")
-    email_account = CEEmailAccount(email_settings.username,
-                                   email_settings.password,
-                                   email_settings.smtp_address,
-                                   email_settings.server)
-    print("Connected to {}".format(email_settings.server))
-
-    email_club_admins(email_account, email_settings)
-    report = GR.write_report(PENDING_TRIAL_REPORT, PENDING_CLUBS, TRIAL_CLUBS, verbose=True)
-    email_report(email_account, email_settings.to_address, email_settings.cc_recipients,
-                 "Pending and Trial Accounts ({})".format(CURRENT_DATE),
-                 GR.generate_summary(PENDING_CLUBS, TRIAL_CLUBS,
-                                     GR.print_short_info, html=True))
-    sys.exit()
-    
-
-def add_to_list(club, ls):
-    return ls.append(club)
+# Data Types
 
 class Club(object):
-    """ Store Club information """
+    """ Club Information """
 
     def __init__(self):
         self.club_name = input("Club name: ").strip()
@@ -61,7 +46,14 @@ class Club(object):
             self.subject = "Trial Account Notice"
             with open(TRIAL_EMAIL) as file:
                 self.body += ''.join(file.readlines())
-            
+
+# To add a club to the PENDING_CLUBS or TRIAL_CLUBS list
+def add_to_list(club, ls):
+    return ls.append(club)    
+
+""" Program Flow """
+
+# Used to loop through and create Clubs and send an email to them.
 def email_club_admins(email, settings):
     """ Main Loop: loop through until all the admins have been emailed """
     
@@ -78,14 +70,34 @@ def email_club_admins(email, settings):
             add_to_list(club, TRIAL_CLUBS)
 
         user_input = input("Would you like to add another? [Y/n] >> ")
-
         if user_input == 'n':
             break
 
+# Email the report summary
 def email_report(email_account, to_address, cc_recipients, subject, message):
     user_input = input("Would you like to email a report? [Y/n] >> ").lower()
     if user_input != 'n' or user_input != 'no':
-        email_account.send_email(to_address, subject, message, cc_recipients)        
+        email_account.send_email(to_address, subject, message, cc_recipients)
+
+# Main
+def main():
+    email_settings = EmailSettings()
+    print(email_settings.to_address)
+    print(email_settings.cc_recipients)
+    print("Connecting...")
+    email_account = CEEmailAccount(email_settings.username,
+                                   email_settings.password,
+                                   email_settings.smtp_address,
+                                   email_settings.server)
+    print("Connected to {}".format(email_settings.server))
+
+    email_club_admins(email_account, email_settings)
+    report = GR.write_report(PENDING_TRIAL_REPORT, PENDING_CLUBS, TRIAL_CLUBS, verbose=True)
+    email_report(email_account, email_settings.to_address, email_settings.cc_recipients,
+                 "Pending and Trial Accounts ({})".format(CURRENT_DATE),
+                 GR.generate_summary(PENDING_CLUBS, TRIAL_CLUBS,
+                                     GR.print_short_info, html=True))
+    sys.exit()
 
 if __name__ == '__main__':
     try:
