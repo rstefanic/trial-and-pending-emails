@@ -19,8 +19,8 @@ FOURTEEN_DAYS_FROM_NOW = "{:%m-%d-%Y}".format(datetime.datetime.now() +
                                              datetime.timedelta(days=14))
 
 # Paths for files used and created
-TRIAL_EMAIL = os.path.join(os.path.abspath('./src'), 'trial.html')
-PENDING_EMAIL = os.path.join(os.path.abspath('./src'), 'pending.html')
+TRIAL_EMAIL = os.path.join(os.path.abspath('./src'), 'trial.txt')
+PENDING_EMAIL = os.path.join(os.path.abspath('./src'), 'pending.txt')
 PENDING_TRIAL = "pending-trial-accounts({}).txt".format(CURRENT_DATE)
 PENDING_TRIAL_REPORT = os.path.join(os.path.abspath('.'), PENDING_TRIAL)
 
@@ -34,7 +34,7 @@ class Club(object):
         self.club_id = input("Club ID: ").strip()
         self.email = input("Email: ").strip()
         self.admin_name = input("Admin name: ").strip()
-        self.body = "Dear {}".format(self.admin_name) 
+        self.body = "Dear {},".format(self.admin_name) 
         trial = input("Trial Account [Y/n]: ").lower()
         if trial == 'n'or trial == 'no':
             self.trial = False
@@ -76,7 +76,7 @@ def email_club_admins(email, settings):
 # Email the report summary
 def email_report(email_account, to_address, cc_recipients, subject, message):
     user_input = input("Would you like to email a report? [Y/n] >> ").lower()
-    if user_input != 'n' or user_input != 'no':
+    if user_input != 'n':
         email_account.send_email(to_address, subject, message, cc_recipients)
 
 # Main
