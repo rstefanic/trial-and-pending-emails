@@ -69,6 +69,7 @@ def email_club_admins(email, settings):
         else:
             add_to_list(club, TRIAL_CLUBS)
 
+        copy_to_clipboard(CURRENT_DATE, club.trial)
         user_input = input("Would you like to add another? [Y/n] >> ")
         if user_input == 'n':
             break
@@ -98,6 +99,15 @@ def main():
                  GR.generate_summary(PENDING_CLUBS, TRIAL_CLUBS,
                                      GR.print_short_info, html=True))
     sys.exit()
+
+# Copy note for admin screen
+def copy_to_clipboard(today, trial):
+        """Copy the message for Club Notes"""
+        if trial:
+            os.system("echo %s|clip" % (today + ": Trial account notice sent [RS]"))
+        else:
+            os.system("echo %s|clip" % (today + ": Pending account notice sent [RS]"))
+
 
 if __name__ == '__main__':
     try:
