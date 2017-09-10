@@ -47,6 +47,20 @@ class Club(object):
             with open(TRIAL_EMAIL) as file:
                 self.body += ''.join(file.readlines())
 
+    
+
+    def review(self):
+        type = "Trial" if self.trial else "Pending"
+        print("\n\033[32mReview\033[0m\n")
+        print("Club name:  \033[92m{}\033[0m".format(self.club_name))
+        print("Club Id  :  \033[92m{}\033[0m".format(self.club_id))
+        print("Email:      \033[92m{}\033[0m".format(self.email))
+        print("Admin Name: \033[92m{}\033[0m".format(self.admin_name))
+        print("Trail:      \033[92m{}\033[0m".format(type))
+        print("\n")
+        
+        return input("Is the information correct? [Y/n] >> ").lower()
+        
 # To add a club to the PENDING_CLUBS or TRIAL_CLUBS list
 def add_to_list(club, ls):
     return ls.append(club)    
@@ -63,6 +77,10 @@ def email_club_admins(email, settings):
     while True:
         print("\n")
         club = Club()
+
+        if club.review() == 'n':
+            continue
+
         email.send_email(club.email, club.subject, club.body)
         if club.trial == False:
             add_to_list(club, PENDING_CLUBS)
@@ -93,8 +111,10 @@ def main():
     print("Connected to {}".format(email_settings.server))
 
     email_club_admins(email_account, email_settings)
-    report = GR.write_report(PENDING_TRIAL_REPORT, PENDING_CLUBS, TRIAL_CLUBS, verbose=True)
-    email_report(email_account, email_settings.to_address, email_settings.cc_recipients,
+    report = GR.write_report(PENDING_TRIAL_REPORT, PENDING_CLUBS,
+                             TRIAL_CLUBS, verbose=True)
+    email_report(email_account, email_settings.to_address,
+                 email_settings.cc_recipients,
                  "Pending and Trial Accounts ({})".format(CURRENT_DATE),
                  GR.generate_summary(PENDING_CLUBS, TRIAL_CLUBS,
                                      GR.print_short_info, html=True))
@@ -104,9 +124,11 @@ def main():
 def copy_to_clipboard(today, trial):
         """Copy the message for Club Notes"""
         if trial:
-            os.system("echo %s|clip" % (today + ": Trial account notice sent [RS]"))
+            os.system("echo %s|clip" %
+                      (today + ": Trial account notice sent [RS]"))
         else:
-            os.system("echo %s|clip" % (today + ": Pending account notice sent [RS]"))
+            os.system("echo %s|clip" %
+                      (today + ": Pending account notice sent [RS]"))
 
 
 if __name__ == '__main__':
